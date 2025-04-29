@@ -1,6 +1,8 @@
 ---
 import { getCollection, render } from "astro:content";
 import Layout from "../../layouts/Layout.astro";
+import AmazonLogo from "../../components/AmazonLogo.astro";
+const showBuyButton = import.meta.env.PUBLIC_SHOW_BUY_BUTTON;
 
 export async function getStaticPaths() {
   const books = await getCollection("books");
@@ -12,7 +14,7 @@ export async function getStaticPaths() {
 }
 
 const { book } = Astro.props;
-const { data } = book;
+const { data, slug } = book;
 const { title, author, img, readtime, description, buy } = data;
 
 const { Content } = await render(book);
@@ -21,13 +23,50 @@ const { Content } = await render(book);
 <Layout title={title}>
   <div class="flex gap-12">
     <aside class="flex flex-col items-center gap-4">
-      <img src={`/${img}`} alt={title} class="rounded w-72 h-auto" />
+      <a href="/">{"« Go back"} </a>
+      <img
+        transition:name={`img-${slug}`}
+        src={`/${img}`}
+        alt={title}
+        class="rounded w-72 h-auto"
+      />
+      <span id="score" class=""></span>
+      {
+        showBuyButton && (
+          <a
+            href={book.data.buy.usa}
+            title="get book"
+            target="_blank"
+            rel="noopener norferrer"
+            class="tetx-balance inline-flex gap-2 itmes-center bg-yellow-400 hover:bg-amber-500 active:bg-yellow-600 text-black font-bold py-2 px-4 rounded-lg border border-yellow-500 transition duration-200 ease-in-out hover:scale-105 justify-center text-center"
+          >
+            Buy book
+            <AmazonLogo />
+          </a>
+        )
+      }
     </aside>
     <main class="max-w-xl">
-      <h1 class="text-4xl font-bold mb-4">{title}</h1>
+      <h1 transition:name={`title-${slug}`} class="text-4xl font-bold mb-4">
+        {title}
+      </h1>
       <div class="prose prose-invert">
         <Content />
       </div>
     </main>
   </div>
 </Layout>
+
+<script>
+  import { SCORE_API_ENDPOINT } from "astro:env/client";
+
+  const scoreElemet = document.querySelector("#score");
+
+  fetch(SCORE_API_ENDPOINT)
+    .then((res) => res.text())
+    .then((scoreValue) => {
+      if (scoreElemet) {
+        scoreElemet.textContent = `Rate - ${scoreValue.trim()}/5`;
+      }
+    });
+</script>

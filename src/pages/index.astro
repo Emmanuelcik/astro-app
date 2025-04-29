@@ -3,7 +3,6 @@ import { getCollection } from "astro:content";
 import Layout from "../layouts/Layout.astro";
 
 const books = await getCollection("books");
-
 ---
 
 <Layout title="Books for devs">
@@ -23,6 +22,7 @@ const books = await getCollection("books");
               return (
                 <article class="flex ">
                   <a
+                    transition:name={`img-${slug}`}
                     href={`/book/${slug}`}
                     class="mb-2 xl:mb-0 transition hover:scale-110 pointer"
                   >
@@ -33,7 +33,10 @@ const books = await getCollection("books");
                     />
                   </a>
                   <div>
-                    <h2 class="mb-2 text-2xl font-bold leading-tight text-white">
+                    <h2
+                      transition:name={`title-${slug}`}
+                      class="mb-2 text-2xl font-bold leading-tight text-white"
+                    >
                       {title}
                     </h2>
 
