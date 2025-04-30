@@ -2,6 +2,8 @@
 import { getCollection, render } from "astro:content";
 import Layout from "../../layouts/Layout.astro";
 import AmazonLogo from "../../components/AmazonLogo.astro";
+import Score from "../../components/Score.astro";
+import BuyFrom from "../../components/BuyFrom.astro";
 const showBuyButton = import.meta.env.PUBLIC_SHOW_BUY_BUTTON;
 
 export async function getStaticPaths() {
@@ -18,6 +20,8 @@ const { data, slug } = book;
 const { title, author, img, readtime, description, buy } = data;
 
 const { Content } = await render(book);
+
+export const prerender = true;
 ---
 
 <Layout title={title}>
@@ -30,21 +34,10 @@ const { Content } = await render(book);
         alt={title}
         class="rounded w-72 h-auto"
       />
-      <span id="score" class=""></span>
-      {
-        showBuyButton && (
-          <a
-            href={book.data.buy.usa}
-            title="get book"
-            target="_blank"
-            rel="noopener norferrer"
-            class="tetx-balance inline-flex gap-2 itmes-center bg-yellow-400 hover:bg-amber-500 active:bg-yellow-600 text-black font-bold py-2 px-4 rounded-lg border border-yellow-500 transition duration-200 ease-in-out hover:scale-105 justify-center text-center"
-          >
-            Buy book
-            <AmazonLogo />
-          </a>
-        )
-      }
+      <Score server:defer id={slug}>
+        <span slot="fallback" class="text-xs opacity-70">Loading...</span>
+      </Score>
+      {showBuyButton && <BuyFrom buy={buy} server:defer />}
     </aside>
     <main class="max-w-xl">
       <h1 transition:name={`title-${slug}`} class="text-4xl font-bold mb-4">
@@ -56,17 +49,3 @@ const { Content } = await render(book);
     </main>
   </div>
 </Layout>
-
-<script>
-  import { SCORE_API_ENDPOINT } from "astro:env/client";
-
-  const scoreElemet = document.querySelector("#score");
-
-  fetch(SCORE_API_ENDPOINT)
-    .then((res) => res.text())
-    .then((scoreValue) => {
-      if (scoreElemet) {
-        scoreElemet.textContent = `Rate - ${scoreValue.trim()}/5`;
-      }
-    });
-</script>

@@ -7,10 +7,11 @@ export default defineConfig({
   vite: {
     plugins: [tailwindcss()],
   },
+  output: "server",
   env: {
     schema: {
       SCORE_API_ENDPOINT: envField.string({
-        context: "client",
+        context: "server",
         access: "public",
       }),
     },

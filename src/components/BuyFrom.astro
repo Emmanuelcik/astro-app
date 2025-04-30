@@ -1,0 +1,25 @@
+---
+import AmazonLogo from "./AmazonLogo.astro";
+
+const SPAIN = "ES";
+
+const country = Astro.request.headers.get("X-vercel-IP-Country") ?? "ES";
+
+const storeCountry = country === SPAIN ? "spain" : "usa";
+
+const countryName = country === SPAIN ? "Spain" : "United States";
+
+const { buy } = Astro.props;
+const url = buy[storeCountry];
+---
+
+<a
+  href={url}
+  title="get book"
+  target="_blank"
+  rel="noopener norferrer"
+  class="tetx-balance inline-flex gap-2 itmes-center bg-yellow-400 hover:bg-amber-500 active:bg-yellow-600 text-black font-bold py-2 px-4 rounded-lg border border-yellow-500 transition duration-200 ease-in-out hover:scale-105 justify-center text-center"
+>
+  Get it from {countryName}
+  <AmazonLogo />
+</a>
